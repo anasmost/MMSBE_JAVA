@@ -1,0 +1,19 @@
+{
+  "properties": [
+    {
+      "name": "local.anas.back_java.admin-email",
+      "type": "java.lang.String",
+      "description": "The admin mail address"
+    },
+    {
+      "name": "local.anas.back_java.jwt.issuer",
+      "type": "java.lang.String",
+      "description": "The local JWT issuer value"
+    },
+    {
+      "name": "local.anas.back_java.jwt.secret",
+      "type": "java.lang.String",
+      "description": "the JWT secret to sign tokens : must be at least 256 bits long"
+    }
+  ]
+}

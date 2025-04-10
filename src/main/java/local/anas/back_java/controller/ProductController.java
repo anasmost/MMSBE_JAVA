@@ -1,7 +1,9 @@
 package local.anas.back_java.controller;
 
 import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +21,7 @@ import jakarta.persistence.PersistenceContext;
 import local.anas.back_java.mapper.ProductMapper;
 import local.anas.back_java.model.Product;
 import local.anas.back_java.persistence.ProductRepository;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 
@@ -32,6 +35,10 @@ public class ProductController {
   @PersistenceContext
   private final EntityManager entityManager;
 
+  @Value("${local.anas.back_java.admin-email}")
+  @Getter
+  private String adminEmail;
+
   @GetMapping
   public List<Product> getAll() {
     return productRepository.findAll();
@@ -43,11 +50,13 @@ public class ProductController {
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
   }
 
+  @PreAuthorize("this.adminEmail.equals(principal.email)")
   @PostMapping
   public Product createOne(@RequestBody Product product) {
     return productRepository.save(product);
   }
 
+  @PreAuthorize("this.adminEmail.equals(principal.email)")
   @PatchMapping("/{id}")
   @Transactional
   public Product updateOne(@PathVariable long id, @RequestBody Product productDto)
@@ -60,6 +69,7 @@ public class ProductController {
     return productRepository.save(product);
   }
 
+  @PreAuthorize("this.adminEmail.equals(principal.email)")
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @Transactional
@@ -71,3 +81,4 @@ public class ProductController {
   }
 
 }
+
