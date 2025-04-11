@@ -1,9 +1,7 @@
 package local.anas.back_java.controller;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,15 +14,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import local.anas.back_java.annotation.security.AuthorizeAdminOnly;
 import local.anas.back_java.mapper.ProductMapper;
 import local.anas.back_java.model.Product;
 import local.anas.back_java.persistence.ProductRepository;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-
 
 @RestController
 @RequestMapping("/products")
@@ -32,12 +26,6 @@ import lombok.RequiredArgsConstructor;
 public class ProductController {
   private final ProductRepository productRepository;
   private final ProductMapper productMapper;
-  @PersistenceContext
-  private final EntityManager entityManager;
-
-  @Value("${local.anas.back_java.admin-email}")
-  @Getter
-  private String adminEmail;
 
   @GetMapping
   public List<Product> getAll() {
@@ -50,13 +38,13 @@ public class ProductController {
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
   }
 
-  @PreAuthorize("this.adminEmail.equals(principal.email)")
+  @AuthorizeAdminOnly
   @PostMapping
   public Product createOne(@RequestBody Product product) {
     return productRepository.save(product);
   }
 
-  @PreAuthorize("this.adminEmail.equals(principal.email)")
+  @AuthorizeAdminOnly
   @PatchMapping("/{id}")
   @Transactional
   public Product updateOne(@PathVariable long id, @RequestBody Product productDto)
@@ -69,7 +57,7 @@ public class ProductController {
     return productRepository.save(product);
   }
 
-  @PreAuthorize("this.adminEmail.equals(principal.email)")
+  @AuthorizeAdminOnly
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @Transactional

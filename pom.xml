@@ -29,8 +29,8 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
-		<start-class>local.anas.back_java.BackJavaApplication</start-class>
 		<mapstruct.version>1.6.3</mapstruct.version>
+		<start-class>local.anas.back_java.BackJavaApplication</start-class>
 	</properties>
 	<dependencies>
 
@@ -106,9 +106,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<excludes>
-						<excludeArtifactIds>spring-boot-devtools</excludeArtifactIds>
-					</excludes>
+					<excludeGroupIds>org.projectlombok,org.mapstruct</excludeGroupIds>
 				</configuration>
 			</plugin>
 			<plugin>

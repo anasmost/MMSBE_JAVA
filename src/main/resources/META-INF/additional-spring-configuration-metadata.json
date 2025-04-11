@@ -13,7 +13,12 @@
     {
       "name": "local.anas.back_java.jwt.secret",
       "type": "java.lang.String",
-      "description": "the JWT secret to sign tokens : must be at least 256 bits long"
+      "description": "the JWT secret to sign tokens with (Base64)"
+    },
+    {
+      "name": "local.anas.back_java.jwt.duration",
+      "type": "java.lang.String",
+      "description": "Jwt validatity duration before expiration : in java.time.Duration semantics"
     }
   ]
 }
