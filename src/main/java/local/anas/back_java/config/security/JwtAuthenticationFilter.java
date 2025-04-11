@@ -20,20 +20,21 @@ import lombok.val;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+  private static final String TOKEN_PREFIX = "Bearer ";
   private final JwtService jwtService;
 
   @Override
   protected void doFilterInternal(@NonNull HttpServletRequest request,
       @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
       throws ServletException, IOException, java.io.IOException {
-    final String authHeader = request.getHeader("Authorization");
+    final String authValue = request.getHeader("Authorization");
 
-    if (!Strings.hasText(authHeader) || !authHeader.startsWith("Bearer ")) {
+    if (!Strings.hasText(authValue) || !authValue.startsWith(TOKEN_PREFIX)) {
       filterChain.doFilter(request, response);
       return;
     }
 
-    final String token = authHeader.substring(7);
+    final String token = authValue.replaceFirst(TOKEN_PREFIX, "");
 
     if (SecurityContextHolder.getContext().getAuthentication() == null) {
 

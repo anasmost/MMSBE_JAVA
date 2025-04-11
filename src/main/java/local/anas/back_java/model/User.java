@@ -14,6 +14,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import local.anas.back_java.validation.AccountGroup;
 import local.anas.back_java.validation.TokenGroup;
 import lombok.AllArgsConstructor;
@@ -31,17 +32,21 @@ public class User implements UserDetails {
         @Id
         @Email(message = "Please provide a valid email address",
                         groups = {AccountGroup.class, TokenGroup.class})
+        @NotBlank(groups = {AccountGroup.class, TokenGroup.class})
         private String email;
 
         @Length(min = 3, message = "Username must be at least 3 characters long",
                         groups = {AccountGroup.class})
+        @NotBlank(groups = {AccountGroup.class})
         private String username;
         @Length(min = 3, message = "Firstname must be at least 3 characters long",
                         groups = {AccountGroup.class})
+        @NotBlank(groups = {AccountGroup.class})
         private String firstname;
 
         @Length(min = 8, message = "Password must be at least 8 characters long",
                         groups = {AccountGroup.class, TokenGroup.class})
+        @NotBlank(groups = {AccountGroup.class, TokenGroup.class})
         private String password;
 
         @ManyToMany

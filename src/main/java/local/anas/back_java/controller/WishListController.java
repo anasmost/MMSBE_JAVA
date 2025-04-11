@@ -2,7 +2,6 @@ package local.anas.back_java.controller;
 
 import java.util.Set;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +16,6 @@ import local.anas.back_java.model.User;
 import local.anas.back_java.service.UserService;
 import lombok.RequiredArgsConstructor;
 
-@PreAuthorize("isAuthenticated()")
 @RestController
 @RequestMapping("/wishlist")
 @RequiredArgsConstructor

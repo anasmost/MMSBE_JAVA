@@ -31,7 +31,6 @@ public class UserService {
 
   public void deleteFromCart(Long productId, User userPrincipal) {
     final User user = userRepository.findByEmail(userPrincipal.getEmail()).orElseThrow();
-    // final Product product = productRepository.findById(productDto.getId()).orElseThrow();
 
     user.getCart().removeIf(p -> p.getId().equals(productId));
 
