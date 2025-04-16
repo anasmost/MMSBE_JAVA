@@ -6,6 +6,8 @@ import java.util.Set;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -28,6 +30,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User implements UserDetails {
         @Id
         @Email(message = "Please provide a valid email address",
@@ -60,9 +63,11 @@ public class User implements UserDetails {
         private Set<Product> cart;
 
         @Transient
+        @JsonIgnore
         private final String authority = "USER";
 
         @Override
+        @JsonIgnore
         public Collection<? extends GrantedAuthority> getAuthorities() {
                 return List.of(() -> this.authority);
         }
