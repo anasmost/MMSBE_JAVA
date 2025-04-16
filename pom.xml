@@ -13,6 +13,7 @@
 	<artifactId>back_java</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>back_java</name>
+	<packaging>${packaging}</packaging>
 	<description>Demo project for Spring Boot</description>
 	<url />
 	<licenses>
@@ -30,7 +31,6 @@
 	<properties>
 		<java.version>21</java.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
-		<start-class>local.anas.back_java.BackJavaApplication</start-class>
 	</properties>
 	<dependencies>
 
@@ -147,6 +147,46 @@
 				</configuration>
 			</plugin>
 		</plugins>
+
 	</build>
+
+	<profiles>
+
+		<profile>
+			<id>jar</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<start-class>local.anas.back_java.BackJavaApplication</start-class>
+				<packaging>jar</packaging>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>war</id>
+			<activation>
+				<property>
+					<name>packaging</name>
+					<value>war</value>
+				</property>
+			</activation>
+			<properties>
+				<start-class>local.anas.back_java.BackJavaApplicationWar</start-class>
+				<packaging>war</packaging>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+			<build>
+				<finalName>${artifactId}</finalName>
+			</build>
+		</profile>
+
+	</profiles>
 
 </project>
