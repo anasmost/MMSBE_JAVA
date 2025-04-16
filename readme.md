@@ -18,9 +18,11 @@ To start the application, follow these steps:
 
 5. **Option 2: Start after packaging**
 
-   - Build the application using `./mvnw clean package`.
+   - Build the application as a JAR using `./mvnw clean package`.
 
    - Start the application using `java -jar target/back_java-0.0.1-SNAPSHOT.jar`.
+
+   - Alternatively, package the application as a WAR by adding `-Dpackaging=war` to the Maven CLI and deploy the WAR to a web server.
 
 6. The application will start on port `3333` by default. You can change this by setting the `server.port` property in the `application.properties` file.
 
@@ -32,9 +34,9 @@ To start the application, follow these steps:
 
 #### Les instructions ayant abouti à cette mini-application sont confidentielles
 
-Pour lancer l'application, suivez ces tapes:
+Pour lancer l'application, suivez ces étapes:
 
-1. Assurez-vous d'avoir [Java 21](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html) ou supérieur install sur votre machine.
+1. Assurez-vous d'avoir [Java 21](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html) ou supérieur installé sur votre machine.
 
 2. Clonez en utilisant `git clone https://github.com/anasmost/MMSBE_JAVA.git`.
 
@@ -48,11 +50,13 @@ Pour lancer l'application, suivez ces tapes:
 
 5. **Option 2: Lancer après packaging**
 
-   - Compilez l'application en utilisant `./mvnw clean package`.
+   - Compilez l'application en tant que JAR en utilisant `./mvnw clean package`.
 
    - Lancer l'application en utilisant `java -jar target/back_java-0.0.1-SNAPSHOT.jar`.
 
-6. L'application va se lancer sur le port `3333` par d faut. Vous pouvez modifier ce paramètre en configurant la propriété `server.port` dans le fichier `application.properties`.
+   - Alternativement, packagez l'application en tant que WAR en ajoutant `-Dpackaging=war` à la CLI Maven et déployez le WAR sur un serveur web.
+
+6. L'application va se lancer sur le port `3333` par défaut. Vous pouvez modifier ce paramètre en configurant la propriété `server.port` dans le fichier `application.properties`.
 
 7. Une fois l'application lancée, vous pouvez accéder aux endpoints de l'api sur [http://localhost:3333](http://localhost:3333) dans votre client HTTP, en suivant les instructions du readme confidentiel.
 
