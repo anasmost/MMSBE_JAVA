@@ -18,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.json.AutoConfigureJson;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -25,11 +26,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 import local.anas.back_java.BackJavaApplication;
 import local.anas.back_java.model.User;
-import local.anas.back_java.service.JwtService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = BackJavaApplication.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+                classes = BackJavaApplication.class)
 @AutoConfigureMockMvc
 @AutoConfigureJson
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -46,15 +47,18 @@ public class UserControllerIT {
         final User user;
 
         UserControllerIT() throws NoSuchFieldException, SecurityException {
-                final int passwordLength = User.class.getDeclaredField("password").getAnnotation(Length.class).min();
+                final int passwordLength = User.class.getDeclaredField("password")
+                                .getAnnotation(Length.class).min();
 
                 user = User.builder().email(faker.internet().emailAddress())
-                                .firstname(faker.name().firstName()).username(faker.name().username())
-                                .password(faker.internet().password(passwordLength, passwordLength + 4)).build();
+                                .firstname(faker.name().firstName())
+                                .username(faker.name().username()).password(faker.internet()
+                                                .password(passwordLength, passwordLength + 4))
+                                .build();
         }
 
         @Autowired
-        JwtService jwtService;
+        JwtDecoder jwtDecoder;
 
         @Test
         @Order(1)
@@ -72,19 +76,17 @@ public class UserControllerIT {
                                 .perform(post("/token").contentType(MediaType.APPLICATION_JSON)
                                                 .content(objectMapper.writeValueAsString(user)))
 
-                                .andExpect(status().isCreated()).andExpect(jsonPath("$.token").isString())
-                                .andReturn();
+                                .andExpect(status().isCreated())
+                                .andExpect(jsonPath("$.token").isString()).andReturn();
 
-                final Map<String, String> tokenPayload = objectMapper.readValue(
-                                result.getResponse().getContentAsString(),
-                                new TypeReference<Map<String, String>>() {
-                                });
+                final Map<String, String> tokenPayload =
+                                objectMapper.readValue(result.getResponse().getContentAsString(),
+                                                new TypeReference<Map<String, String>>() {});
 
                 final String token = tokenPayload.get("token");
 
-                assertThatCode(() -> jwtService.parse(token)).doesNotThrowAnyException();
-                assertThat(jwtService.parse(token).getPayload().get("sub").toString())
-                                .isEqualTo(user.getEmail());
+                assertThatCode(() -> jwtDecoder.decode(token)).doesNotThrowAnyException();
+                assertThat(jwtDecoder.decode(token).getSubject()).isEqualTo(user.getEmail());
 
         }
 }

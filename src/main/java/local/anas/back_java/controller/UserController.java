@@ -6,6 +6,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,7 +40,7 @@ public class UserController {
     Authentication authentication = authenticationManager
         .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
 
-    String token = jwtService.generateToken(((User) authentication.getPrincipal()).getEmail());
-    return Map.of("token", token);
+    Jwt token = jwtService.createToken((User) authentication.getPrincipal());
+    return Map.of("token", token.getTokenValue());
   }
 }

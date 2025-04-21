@@ -1,5 +1,6 @@
 package local.anas.back_java.config.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,8 +17,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import com.nimbusds.jose.proc.SecurityContext;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -25,9 +31,10 @@ import lombok.RequiredArgsConstructor;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class AccessSecurityConfig {
-
-  private final JwtAuthenticationFilter jwtAuthenticationFilter;
   private final UserDetailsService userDetailsService;
+
+  @Value("#{new com.nimbusds.jose.jwk.source.ImmutableSecret('${local.anas.back_java.jwt.secret}'.getBytes())}")
+  private ImmutableSecret<SecurityContext> jwkSource;
 
   @Bean
   PasswordEncoder passwordEncoder() {
@@ -54,13 +61,24 @@ public class AccessSecurityConfig {
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .httpBasic(HttpBasicConfigurer::disable)
+        .oauth2ResourceServer(server -> server.jwt(jwt -> jwt.decoder(jwtDecoder())))
 
-        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        // .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .authorizeHttpRequests(authorize -> authorize
             .requestMatchers("/token", "/account", "/h2*/**", "/api-docs*/**", "/swagger-ui*/**")
             .permitAll().anyRequest().authenticated());
 
     return http.build();
+  }
+
+  @Bean
+  JwtDecoder jwtDecoder() {
+    return NimbusJwtDecoder.withSecretKey(jwkSource.getSecretKey()).build();
+  }
+
+  @Bean
+  JwtEncoder jwtEncoder() {
+    return new NimbusJwtEncoder(jwkSource);
   }
 
 }

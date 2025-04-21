@@ -8,7 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("principal.email == @environment.getProperty('local.anas.back_java.admin-email')")
+@PreAuthorize("authentication.name == @environment.getProperty('local.anas.back_java.admin-email')")
 public @interface AuthorizeAdminOnly {
 
 }

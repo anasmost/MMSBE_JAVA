@@ -14,7 +14,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import local.anas.back_java.validation.AccountGroup;
@@ -32,6 +31,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User implements UserDetails {
+        private static final String STATIC_AUTHORITY = "USER";
+
         @Id
         @Email(message = "Please provide a valid email address",
                         groups = {AccountGroup.class, TokenGroup.class})
@@ -62,14 +63,11 @@ public class User implements UserDetails {
                         inverseJoinColumns = {@JoinColumn(name = "product_id")})
         private Set<Product> cart;
 
-        @Transient
-        @JsonIgnore
-        private final String authority = "USER";
 
         @Override
         @JsonIgnore
         public Collection<? extends GrantedAuthority> getAuthorities() {
-                return List.of(() -> this.authority);
+                return List.of(() -> STATIC_AUTHORITY);
         }
 
 }

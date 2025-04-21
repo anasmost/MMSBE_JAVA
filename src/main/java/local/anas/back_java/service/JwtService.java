@@ -2,41 +2,35 @@ package local.anas.back_java.service;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Date;
-import java.util.Map;
-import javax.crypto.SecretKey;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
-import io.jsonwebtoken.Header;
-import io.jsonwebtoken.Jwt;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
+import local.anas.back_java.model.User;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
-  private SecretKey jwtSecret;
+  private final JwtEncoder jwtEncoder;
+
+  @Value("#{T(java.time.Duration).parse('${local.anas.back_java.jwt.duration}')}")
   private Duration jwtDuration;
 
   @Value("${local.anas.back_java.jwt.issuer}")
   private String jwtIssuer;
 
-  @Autowired
-  void setJwtConfig(@Value("${local.anas.back_java.jwt.secret}") String jwtSecretString,
-      @Value("${local.anas.back_java.jwt.duration}") String jwtDuration) {
-    this.jwtSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecretString));
-    this.jwtDuration = Duration.parse(jwtDuration);
-  }
-
-  public String generateToken(String email) {
-    return Jwts.builder().subject(email).issuer(jwtIssuer).issuedAt(new Date())
-        .expiration(Date.from(Instant.now().plus(jwtDuration))).signWith(jwtSecret).compact();
-  }
-
-  public Jwt<Header, Map<String, String>> parse(String token) {
-    return (Jwt<Header, Map<String, String>>) Jwts.parser().verifyWith(jwtSecret).build()
-        .parse(token);
+  public Jwt createToken(User user) {
+    return jwtEncoder.encode(JwtEncoderParameters.from(JwsHeader.with(MacAlgorithm.HS256).build(),
+        JwtClaimsSet.builder().subject(user.getEmail())
+            .claim("roles",
+                user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+            .issuer(jwtIssuer).expiresAt(Instant.now().plus(jwtDuration)).build()));
   }
 
 }
